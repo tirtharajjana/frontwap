@@ -1,0 +1,22 @@
+.modal.animate__animated.animate__zoomIn#signup-modal
+    .modal-dialog.modal-lg.modal-dialog-centered
+        .modal-content 
+            .modal-body
+                .row 
+                    .col-md-6.d-flex.align-items-center.justify-content-center
+                        img(src="images/signup.svg", alt="signup", width="100%") 
+                    .col-md-6
+                        h1.display-4.mb-4(style="font-size:35px") Register now
+                        form 
+                            .form-group.md-4
+                                input.form-control.p-4(type="text", name="name",placeholder="Your Name")
+                            .form-group.md-4
+                                input.form-control.p-4(type="email", name="email",placeholder="Email Id")
+                            .form-group.md-4
+                                input.form-control.p-4(type="number", name="mobile",placeholder="Mobile No")
+                            .form-group.md-4
+                                input.form-control.p-4(type="password", name="password",placeholder="Password")
+                            .form-group.md-4
+                                button.btn(type="submit",style="background-color:#377DFF;color:white") Signup
+                            p Already have an account?
+                                a(href="#") Login     

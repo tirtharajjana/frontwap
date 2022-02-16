@@ -7,16 +7,16 @@
                         img(src="images/signup.svg", alt="signup", width="100%") 
                     .col-md-6
                         h1.display-4.mb-4(style="font-size:35px") Register now
-                        form 
+                        form#signup-form 
                             .form-group.md-4
-                                input.form-control.p-4(type="text", name="name",placeholder="Your Name")
+                                input.form-control.p-4(type="text", name="company_name",placeholder="Company Name",required="required")
                             .form-group.md-4
-                                input.form-control.p-4(type="email", name="email",placeholder="Email Id")
+                                input.form-control.p-4(type="email", name="email",placeholder="Company Email Id",required="required")
                             .form-group.md-4
-                                input.form-control.p-4(type="number", name="mobile",placeholder="Mobile No")
+                                input.form-control.p-4(type="number", name="mobile",placeholder="Mobile No",required="required")
                             .form-group.md-4
-                                input.form-control.p-4(type="password", name="password",placeholder="Password")
+                                input.form-control.p-4(type="password", name="password",placeholder="Password",required="required")
                             .form-group.md-4
                                 button.btn(type="submit",style="background-color:#377DFF;color:white") Signup
                             p Already have an account?
-                                a(href="#") Login     
+                                a(href="#")#request-login-modal Login     

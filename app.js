@@ -3,12 +3,17 @@ const express = require('express');
 const path = require('path');
 const cookieParser = require('cookie-parser');
 const logger = require('morgan');
+const multer = require('multer');
+const multipart = multer().none();
+
 
 
 const app = express();
 
 
 const indexRoute = require('./routes/index.routes');
+const signupRoute = require('./routes/signup.routes');
+const companyRoute = require('./routes/company.routes');
 
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
@@ -17,9 +22,12 @@ app.set('view engine', 'pug');
 app.use(logger('dev'));
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
+app.use(multipart)
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 app.use('/', indexRoute);
+app.use('/api/signup', signupRoute);
+app.use('/api/private/company', companyRoute);
 
 
 // catch 404 and forward to error handler

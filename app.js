@@ -15,6 +15,9 @@ const indexRoute = require('./routes/index.routes');
 const signupRoute = require('./routes/signup.routes');
 const companyRoute = require('./routes/company.routes');
 
+
+const tokenService = require('./services/token.service')
+
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'pug');
@@ -27,6 +30,17 @@ app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 app.use('/', indexRoute);
 app.use('/api/signup', signupRoute);
+
+//implement api security
+app.use((req, res, next) => {
+  const token = tokenService.verifyToken(req);
+  if (token.isVerified) {
+    next();
+  } else {
+    res.status(401);
+    res.json({ message: "permission denied" })
+  }
+})
 app.use('/api/private/company', companyRoute);
 
 

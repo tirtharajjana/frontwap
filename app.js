@@ -14,6 +14,7 @@ const app = express();
 const indexRoute = require('./routes/index.routes');
 const signupRoute = require('./routes/signup.routes');
 const companyRoute = require('./routes/company.routes');
+const userRoute = require('./routes/user.routes');
 
 
 const tokenService = require('./services/token.service')
@@ -30,6 +31,8 @@ app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 app.use('/', indexRoute);
 app.use('/api/signup', signupRoute);
+
+app.use('/api/private/user', userRoute);
 
 //implement api security
 app.use((req, res, next) => {

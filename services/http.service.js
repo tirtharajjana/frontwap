@@ -1,14 +1,12 @@
 const ajax = require('supertest');
 const tokenService = require('../services/token.service')
 
-const postRequest = (req) => {
+const postRequest = async (req) => {
     // console.log(token);
-    ajax(req.endpoint)
+    const res = await ajax(req.endpoint)
         .post(req.api)
-        .send({ token: req.data })
-        .end((err, dataRes) => {
-            console.log(dataRes.body);
-        });
+        .send({ token: req.data });
+    return res;
 }
 
 module.exports = {

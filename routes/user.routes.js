@@ -1,11 +1,9 @@
-const express = require('express');
+const express = require("express");
 const router = express.Router();
+const userController = require("../controller/user.controller");
 
-const tokenService = require('../services/token.service')
-const httpService = require('../services/http.service')
-
-router.post('/', async (req, res) => {
-    res.send("success")
-})
+router.post("/",(request,response)=>{
+  userController.createUser(request,response);
+});
 
 module.exports = router;

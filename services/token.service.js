@@ -1,57 +1,71 @@
-require('dotenv').config();
-const jwt = require('jsonwebtoken');
+require("dotenv").config();
+const jwt = require("jsonwebtoken");
 const secretKey = process.env.SECRET_KEY;
-const issService = require("./iss.service")
+const issService = require("./iss.service");
 
-const create = async (req, expiresIn) => {
-    const formdata = req.body;
-    const endpoint = req.get("origin");
-    const api = req.originalUrl;
-    // console.log({ endpoint, api });
-    const iss = endpoint + api;
-
+const create = async (request,expiresIn)=>{
+    const formdata = request.body;
+    const endpoint = request.get('origin');
+    const api = request.originalUrl;
+    const iss = endpoint+api;
     const token = await jwt.sign({
-        iss,
-        data: formdata
-    }, secretKey, { expiresIn });
+      iss: iss,
+      data: formdata
+    },secretKey,{expiresIn:expiresIn});
     return token;
 }
 
-const verify = (req) => {
-    const token = req.body.token;
-    if (token) {
-        try {
-            const tmp = jwt.verify(token, secretKey);
-            const requestCommingFrom = tmp.iss;
+const createCustom = async (data,expiresIn)=>{
+    const formdata = data.body;
+    const endpoint = data.endpoint;
+    const api = data.originalUrl;
+    const iss = data.iss;
+    const token = await jwt.sign({
+      iss: iss,
+      data: formdata
+    },secretKey,{expiresIn:expiresIn});
+    return token;
+}
 
-            if (issService.indexOf(requestCommingFrom) != -1) {
-                return {
-                    isVerified: true,
-                    data: tmp.data
-                };
-            } else {
-                return {
-                    isVerified: false,
+const verify = (request)=>{
+  const token = request.body.token;
+  if(token)
+  {
+    try
+    {
+      const tmp = jwt.verify(token,secretKey);
+      const requestCommingFrom = tmp.iss;
 
-                };
-            }
-
-        } catch (error) {
-            return {
-                isVerified: false,
-
-            };
-        }
-    } else {
+      if(issService.indexOf(requestCommingFrom) != -1)
+      {
         return {
-            isVerified: false,
-
+          isVerified: true,
+          data: tmp.data
         };
+      }
+      else{
+        return {
+          isVerified: false,
+        };
+      }
+    }
+    catch(error)
+    {
+      return {
+        isVerified: false,
+      };
     }
 
+  }
+  else{
+    return {
+      isVerified: false,
+    };
+  }
 }
 
 module.exports = {
-    createToken: create,
-    verifyToken: verify
+  createToken: create,
+  verifyToken: verify,
+  createCustomToken: createCustom
 }

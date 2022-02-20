@@ -11,6 +11,7 @@ const app = express();
 
 const indexRoute = require("./routes/index.routes");
 const signupRoute = require("./routes/signup.routes");
+const loginRoute = require("./routes/login.routes");
 const userRoute = require("./routes/user.routes");
 const companyRoute = require("./routes/company.routes");
 const tokenService = require("./services/token.service");
@@ -25,39 +26,39 @@ app.use(express.urlencoded({ extended: false }));
 app.use(multipart);
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
-app.use("/",indexRoute);
-app.use("/api/signup",signupRoute);
+app.use("/", indexRoute);
+app.use("/api/signup", signupRoute);
+app.use("/api/login", loginRoute);
 
 
 
 
 // implementing api security
 
-app.use((request,response,next)=>{
-    const token = tokenService.verifyToken(request);
-    if(token.isVerified)
-    {
-      // user is valid
-      next();
-    }
-    else{
-      response.status(401);
-      response.json({
-        message: "Permission denied"
-      })
-    }
+app.use((request, response, next) => {
+  const token = tokenService.verifyToken(request);
+  if (token.isVerified) {
+    // user is valid
+    next();
+  }
+  else {
+    response.status(401);
+    response.json({
+      message: "Permission denied"
+    })
+  }
 });
 
-app.use("/api/private/company",companyRoute);
-app.use("/api/private/user",userRoute);
+app.use("/api/private/company", companyRoute);
+app.use("/api/private/user", userRoute);
 
 // catch 404 and forward to error handler
-app.use(function(req, res, next) {
+app.use(function (req, res, next) {
   next(createError(404));
 });
 
 // error handler
-app.use(function(err, req, res, next) {
+app.use(function (err, req, res, next) {
   // set locals, only providing error in development
   res.locals.message = err.message;
   res.locals.error = req.app.get('env') === 'development' ? err : {};

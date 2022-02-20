@@ -9,22 +9,25 @@ div.modal.animate__animated.animate__zoomIn#signup-modal
             h1.display-4.mb-4(style="font-size:35px") Register Now
             form#signup-form
               div.form-group.mb-4
-                input.form-control.p-4(
+                input.form-control.p-4.company-name(
                   type="text" 
                   name="company_name" 
                   placeholder="Company name"
                   required="required"
                   value="wap institute"
                   )
+                span.text-danger.company-name-error   
                   
               div.form-group.mb-4
-                input.form-control.p-4(
+                input.form-control.p-4.company-email(
                   type="email" 
                   name="email" 
                   placeholder="Company email"
                   required="required"
                   value="wapinstitution@gmail.com"
                   )
+                span.text-danger.company-email-error      
+
                   
               div.form-group.mb-4
                 input.form-control.p-4(
@@ -45,10 +48,13 @@ div.modal.animate__animated.animate__zoomIn#signup-modal
                   )
                   
               div.form-group.mb-4
-                button.btn(
+                button.btn.signup-btn(
                   type="submit"
                   style="background-color: #377DFF;color:white"
                   ) Sign up
+                  button.btn.btn-danger.disabled.d-none.before-send
+                    span.spinner-grow.spinner-grow-sm.mr-2
+                    span Processing..
                   
               p Already have an account? 
                 a(href="#")#request-login-modal Login

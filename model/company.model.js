@@ -26,33 +26,39 @@ const companySchema = new Schema({
 });
 
 // company name unique validation
-companySchema.pre('save',async function(next){
+companySchema.pre('save', async function (next) {
   const query = {
     company_name: this.company_name
   }
   const length = await mongo.model("Company").countDocuments(query);
-  if(length > 0)
-  {
-    throw next("Company name already exists !");
+  if (length > 0) {
+    const cmpError = {
+      label: "Company name already exists !",
+      field: "company-name"
+    }
+    throw next(cmpError);
   }
-  else{
+  else {
     next();
   }
 });
 
 // company email unique validation
-companySchema.pre('save',async function(next){
+companySchema.pre('save', async function (next) {
   const query = {
     email: this.email
   }
   const length = await mongo.model("Company").countDocuments(query);
-  if(length > 0)
-  {
-    throw next("Company email already exists !");
+  if (length > 0) {
+    const emailError = {
+      label: "Company email already exists !",
+      field: "company-email"
+    }
+    throw next(emailError);
   }
-  else{
+  else {
     next();
   }
 });
 
-module.exports = mongo.model("Company",companySchema);
+module.exports = mongo.model("Company", companySchema);

@@ -71,7 +71,9 @@ $(document).ready(() => {
       },
       success: (response) => {
 
-        console.log(response);
+        if (response.isLogged) {
+          window.location = '/profile'
+        }
       },
       error: (error) => {
         console.log(error);

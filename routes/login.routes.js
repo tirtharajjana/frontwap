@@ -39,7 +39,7 @@ router.post('/', async (req, res) => {
             const isLogged = await bcryptService.decrypt(realPassword, req.body.password);
             if (isLogged) {
                 const authToken = await tokenService.createCustomToken(query, 604800);//7 days
-                res.cookie("authToken", authToken);
+                res.cookie("authToken", authToken, { maxAge: 604800 });//7 days
                 res.status(200);
                 res.json({
                     isLogged: true,
@@ -53,10 +53,12 @@ router.post('/', async (req, res) => {
                 })
             }
         } else {
-            res.json(passwordRes)
+            res.status(passwordRes.status);
+            res.json(passwordRes.body)
         }
     } else {
-        res.json(companyRes);
+        res.status(companyRes.status)
+        res.json(companyRes.body);
     }
 })
 

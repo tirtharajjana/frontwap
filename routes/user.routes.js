@@ -8,5 +8,8 @@ router.post("/", (request, response) => {
 router.get("/:query", (request, response) => {
   userController.getUserPassword(request, response);
 });
+router.put("/:id", (request, response) => {
+  userController.createLog(request, response);
+});
 
 module.exports = router;

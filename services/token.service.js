@@ -30,8 +30,11 @@ const createCustom = async (data, expiresIn) => {
 const verify = (request) => {
   let token = "";
   if (request.method == "GET") {
-
-    token = request.headers['x-auth-token'];
+    if (request.headers['x-auth-token'])
+      token = request.headers['x-auth-token'];
+    else
+      token = request.cookies.authToken
+    // console.log(request.cookies.authToken);
   } else {
     token = request.body.token;
   }

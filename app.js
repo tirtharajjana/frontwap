@@ -30,7 +30,6 @@ app.use(express.static(path.join(__dirname, 'public')));
 app.use("/", indexRoute);
 app.use("/api/signup", signupRoute);
 app.use("/api/login", loginRoute);
-app.use("/profile", profileRoute);
 
 
 
@@ -44,15 +43,16 @@ app.use((request, response, next) => {
     next();
   }
   else {
-    response.status(401);
-    response.json({
-      message: "Permission denied"
-    })
+    response.clearCookie("authToken")
+    response.status(401);//token not verified
+    response.redirect('/');
+
   }
 });
 
 app.use("/api/private/company", companyRoute);
 app.use("/api/private/user", userRoute);
+app.use("/profile", profileRoute);
 
 // catch 404 and forward to error handler
 app.use(function (req, res, next) {

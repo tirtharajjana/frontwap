@@ -1,3 +1,8 @@
+//redirct user if already logged in
+if (document.cookie.indexOf('authToken') != -1) {
+  window.location = "/profile";
+}
+
 // requesting login modal
 $(document).ready(() => {
   $("#request-login-modal").click((e) => {
@@ -73,10 +78,23 @@ $(document).ready(() => {
 
         if (response.isLogged) {
           window.location = '/profile'
+        } else {
+          $(".company-password").addClass("border border-danger");
+          $(".password-error").html("Wrong Password !");
         }
       },
       error: (error) => {
-        console.log(error);
+        $(".before-send").addClass("d-none");
+        $(".login-btn").removeClass("d-none");
+        if (error.status == 404) {
+          $(".username").addClass("border border-danger");
+          $(".username-error").html("User not found !");
+        } else if (error.status == 401) {
+          $(".company-password").addClass("border border-danger");
+          $(".password-error").html("Wrong Password !");
+        } else {
+          alert("Internal server error")
+        }
       }
     });
   });

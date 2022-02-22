@@ -1,65 +1,90 @@
 const express = require("express");
-const { response } = require("../app");
 const router = express.Router();
+const tokenService = require("../services/token.service");
+const httpService = require("../services/http.service");
+const bcryptService = require("../services/bcrypt.service");
 
-const tokenService = require('../services/token.service');
-const httpService = require('../services/http.service');
-const bcryptService = require('../services/bcrypt.service');
+router.post("/",async (request,response)=>{
+  const expiresIn = 120;
+  const token = await tokenService.createToken(request,expiresIn);
 
-router.post('/', async (req, res) => {
-    const token = await tokenService.createToken(req, 120);
+  // getting user id
+  const companyRes = await httpService.getRequest({
+    endpoint: request.get('origin'),
+    api: '/api/private/company',
+    data: token
+  });
+  if(companyRes.body.isCompanyExist)
+  {
+    const query = {
+      body: {
+        uid: companyRes.body.data[0]._id
+      },
+      endpoint: request.get('origin'),
+      api: "/api/private/user",
+      iss: request.get('origin')+request.originalUrl
+    }
 
-    //getting user id
-    const companyRes = await httpService.getRequest({
-        endpoint: req.get('origin'),
-        api: "/api/private/company",
-        data: token
+    const uidToken = await tokenService.createCustomToken(query,expiresIn);
+
+    const passwordRes = await httpService.getRequest({
+      endpoint: request.get('origin'),
+      api: '/api/private/user',
+      data: uidToken
     });
 
-    if (companyRes.body.isCompanyExist) {
-        const query = {
-            body: {
-                uid: companyRes.body.data[0]._id
-            },
-            endpoint: req.get('origin'),
-            api: '/api/private/user',
-            iss: req.get('origin') + req.originalUrl
-        }
+    // getting user password
+    if(passwordRes.body.isCompanyExist)
+    {
+      // allow single device login
+      if(passwordRes.body.data[0].isLogged)
+      {
+        response.status(406);
+        response.json({
+          message: "Please logout from other device"
+        });
+        return false;
+      }
 
-        const uidToken = await tokenService.createCustomToken(query, 120);
-        const passwordRes = await httpService.getRequest({
-            endpoint: req.get('origin'),
-            api: "/api/private/user",
-            data: uidToken
+
+      const realPassword = passwordRes.body.data[0].password;
+      const isLogged = await bcryptService.decrypt(realPassword,request.body.password);
+      if(isLogged)
+      {
+        const secondsInOneDay = 86400; // 1 day
+        const authToken = await tokenService.createCustomToken(query,secondsInOneDay);
+        // update token in database
+        const dbToken = await httpService.putRequest({
+          endpoint: request.get('origin'),
+          api: '/api/private/user',
+          data: authToken
         });
 
-        if (passwordRes.body.isCompanyExist) {
-            const realPassword = passwordRes.body.data[0].password;
-            // console.log(realPassword, req.body.password);
-            const isLogged = await bcryptService.decrypt(realPassword, req.body.password);
-            if (isLogged) {
-                const authToken = await tokenService.createCustomToken(query, 604800);//7 days
-                res.cookie("authToken", authToken, { maxAge: 604800 });//7 days
-                res.status(200);
-                res.json({
-                    isLogged: true,
-                    message: 'success'
-                })
-            } else {
-                res.status(401);
-                res.json({
-                    isLogged: false,
-                    message: 'Wrong Password'
-                })
-            }
-        } else {
-            res.status(passwordRes.status);
-            res.json(passwordRes.body)
-        }
-    } else {
-        res.status(companyRes.status)
-        res.json(companyRes.body);
+        response.cookie("authToken",authToken,{maxAge:(secondsInOneDay*1000)});
+
+        response.status(200);
+        response.json({
+          isLogged: true,
+          message: "Success"
+        });
+      }
+      else{
+        response.status(401);
+        response.json({
+          isLogged: false,
+          message: "Wrong password"
+        });
+      }
     }
-})
+    else{
+      response.status(passwordRes.status);
+      response.json(passwordRes.body);
+    }
+  }
+  else{
+    response.status(companyRes.status);
+    response.json(companyRes.body);
+  }
+});
 
 module.exports = router;

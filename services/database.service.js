@@ -13,21 +13,29 @@ const options = {
   useUnifiedTopology: true,
   useCreateIndex: true
 };
-mongo.connect(url, options);
+mongo.connect(url,options);
 
-const createRecord = async (data, schema) => {
+const createRecord = async (data,schema)=>{
   const currentSchema = schemaList[schema];
   const collection = new currentSchema(data);
   const dataRes = await collection.save();
   return dataRes;
 }
-const getRecordByQuery = async (query, schema) => {
+
+const getRecordByQuery = async (query,schema)=>{
   const currentSchema = schemaList[schema];
   const dataRes = await currentSchema.find(query);
   return dataRes;
 }
 
+const updateByQuery = async (query,schema,data)=>{
+  const currentSchema = schemaList[schema];
+  const dataRes = await currentSchema.updateOne(query,data);
+  return dataRes;
+}
+
 module.exports = {
   createRecord: createRecord,
-  getRecordByQuery
+  getRecordByQuery: getRecordByQuery,
+  updateByQuery: updateByQuery
 }

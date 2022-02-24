@@ -9,7 +9,7 @@ const schemaList = {
   client: clientSchema
 }
 
-const url = "mongodb://localhost:27017/frontwap";
+const url = "mongodb+srv://tirtharajjana:6295794093@cluster0.hdss5.mongodb.net/frontwap?retryWrites=true&w=majority";
 const options = {
   useNewUrlParser: true,
   useUnifiedTopology: true,

@@ -22,7 +22,7 @@ include profile
         div.modal-content.border-none
           div.modal-body.px-4.py-4
             h4.medium-font.mb-4 Client Details
-            form
+            form(autocomplete="off")
               div.form-group.mb-4
                 input.input.form-control.remove-focus(type="text" name="clientName" placeholder="Client name" required="required")
                 
@@ -30,10 +30,10 @@ include profile
                 input.input.form-control.remove-focus(type="email" name="clientEmail" placeholder="Email id" required="required")
                 
               div.form-group.mb-4
-                input.input.form-control.remove-focus(type="text" name="clientCountry" placeholder="Country" required="required")
+                input.input.form-control.remove-focus#country(type="text" name="clientCountry" placeholder="Country" required="required")
                 
               div.form-group.mb-4.d-flex
-                button.btn.btn-light.mr-2(type="button") +91
+                button.btn.btn-light.mr-2#code(type="button") +91
                 input.input.form-control.remove-focus(type="number" name="clientMobile" placeholder="Mobile" required="required")
                 
               button.btn.btn-primary(type="submit") Submit

@@ -1,10 +1,12 @@
 const mongo = require("mongoose");
 const companySchema = require("../model/company.model");
 const userSchema = require("../model/user.model");
+const clientSchema = require("../model/clients.model");
 
 const schemaList = {
   company: companySchema,
-  user: userSchema
+  user: userSchema,
+  client: clientSchema
 }
 
 const url = "mongodb://localhost:27017/frontwap";

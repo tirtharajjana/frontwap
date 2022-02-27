@@ -1,8 +1,9 @@
 // admin layout control
-$(document).ready(function () {
-  $(".toggler").click(function () {
+$(document).ready(function(){
+  $(".toggler").click(function(){
     const state = $(".sidenav").hasClass("sidenav-open");
-    if (state) {
+    if(state)
+    {
       $(".sidenav").removeClass("sidenav-open");
       $(".sidenav").addClass("sidenav-close");
 
@@ -19,18 +20,4 @@ $(document).ready(function () {
       $(".section").addClass("section-open");
     }
   });
-});
-
-$(document).ready(function () {
-  count = 1;
-  var x = setInterval(function () {
-    if (document.cookie.indexOf("authToken") != -1) {
-      count++;
-      // console.log(count);
-    }
-    else {
-      clearInterval(x);
-      console.log("done");
-    }
-  }, 1000);
 });

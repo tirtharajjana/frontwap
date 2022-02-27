@@ -1,4 +1,5 @@
 // get country phone codes
+
 $(document).ready(function () {
     $("#country").on("input", async function () {
         let keyword = $(this).val().trim().toLowerCase();
@@ -26,7 +27,7 @@ $(document).ready(function () {
 
 // add client
 $(document).ready(function () {
-    $("#addClientForm").submit(async function (e) {
+    $(".add-client-form").submit(async function (e) {
         e.preventDefault();
         const token = getCookie("authToken");
         const formdata = new FormData(this);
@@ -41,8 +42,13 @@ $(document).ready(function () {
             loaderBtn: ".add-client-loader"
         }
         try {
-            await ajax(request);
+            const dataRes = await ajax(request);
+            const client = dataRes.data;
             $("#clientModal").modal('hide');
+            const tr = dynamicTr(client);
+            $("table").append(tr);
+            // activate edit delete or share
+            clientAction();
         }
         catch (error) {
             $("#addClientEmail").addClass("animate__animated animate__shakeX text-danger");
@@ -54,16 +60,24 @@ $(document).ready(function () {
     });
 });
 
-//show clients
+// update client
+$(document).ready(function () {
+    $(".update-client-form").submit(function (e) {
+        e.preventDefault();
+        alert("Upload request");
+    });
+});
+
+// show clients
 $(document).ready(function () {
     let from = 0;
     let to = 5;
     showClients(from, to);
-})
+});
 
 async function showClients(from, to) {
     const request = {
-        type: 'GET',
+        type: "GET",
         url: `/clients/${from}/${to}`,
         isLoader: true,
         commonBtn: ".tmp",
@@ -72,65 +86,106 @@ async function showClients(from, to) {
     const response = await ajax(request);
     console.log(response);
     if (response.data.length > 0) {
-        for (const client of response.data) {
-            const tr = `
-            <tr class="animate__animated animate__fadeIn" >
-                <td>
-                    <div class="d-flex align-items-center">
-                        <i class="fa fa-user-circle mr-3" style="font-size:45px" ></i>
-                        <div>
-                            <p class="p-0 m-0 text-capitilaize" >${client.clientName}</p>
-                            <small class="text-uppercase" >${client.clientCountry}</small>
-                        </div>
-                    </div>
-                </td>
-                <td>
-                    ${client.clientEmail}
-                </td>
-                <td>
-                    ${client.clientMobile}
-                </td>
-                <td>
-                    <span class="badge badge-danger" >Offline</span>
-                </td>
-                <td>
-                    ${client.updatedAt}
-                </td>
-                <td>
-                    <div class="d-flex" >
-                        <button class="icon-btn-primary mr-3 edit-client    " data-id="${client._id}" >
-                            <i class="fa fa-edit" ></i>
-                        </button>
-                        
-                        <button class="icon-btn-danger mr-3 delete-client"  data-id="${client._id}">
-                            <i class="fa fa-trash" ></i>
-                        </button>
-                        
-                        <button class="icon-btn-info share-client " data-id="${client._id}">
-                            <i class="fa fa-share-alt" ></i>
-                        </button>
-                    </div>
-                </td>
-            </tr>
-            `;
+        for (let client of response.data) {
+            const tr = dynamicTr(client);
             $("table").append(tr);
         }
-        clientAction()
-    } else {
-        alert("Data not found")
+        clientAction();
+    }
+    else {
+        alert("client not found");
     }
 }
 
 function clientAction() {
-    //delete clients
+    // delete clients
     $(document).ready(function () {
         $(".delete-client").each(function () {
+            $(this).click(async function () {
+                let tr = this.parentElement.parentElement.parentElement;//div->td->tr
+                const id = $(this).data("id");
+                const token = getCookie("authToken");
+                const request = {
+                    type: "DELETE",
+                    url: "/clients/" + id,
+                    data: {
+                        token: token
+                    }
+                }
+
+                const response = await ajax(request);
+                $(tr).removeClass("animate__animated animate__fadeIn");
+                $(tr).addClass("animate__animated animate__fadeOut");
+                setTimeout(function () {
+                    $(tr).remove();
+                }, 500)
+            });
+        });
+    });
+
+    // edit clients
+    $(document).ready(function () {
+        $(".edit-client").each(function () {
             $(this).click(function () {
                 const id = $(this).data("id");
-                alert(id)
-            })
-        })
-    })
+                const clientString = $(this).data("client");
+                let clientData = clientString.replace(/'/g, '"');
+                let client = JSON.parse(clientData);
+                for (let key in client) {
+                    let value = client[key];
+                    $(`[name=${key}]`, "#clientForm").val(value);
+                }
+                $("#clientModal").modal('show');
+            });
+        });
+    });
+}
+
+function dynamicTr(client) {
+    let clientString = JSON.stringify(client);
+    let clientData = clientString.replace(/"/g, "'");
+
+    const tr = `
+    <tr class="animate__animated animate__fadeIn">
+      <td>
+        <div class="d-flex align-items-center">
+          <i class="fa fa-user-circle mr-3" style="font-size:45px"></i>
+          <div>
+            <p class="p-0 m-0 text-capitalize">${client.clientName}</p>
+            <small class="text-uppercase">${client.clientCountry}</small>
+          </div>
+        </div>
+      </td>
+      <td>
+        ${client.clientEmail}
+      </td>
+      <td>
+        ${client.clientMobile}
+      </td>
+      <td>
+        <span class="badge badge-danger">Offline</span>
+      </td>
+      <td>
+        ${client.updatedAt}
+      </td>
+      <td>
+        <div class="d-flex">
+          <button class="icon-btn-primary mr-3 edit-client" data-id="${client._id}" data-client="${clientData}">
+            <i class="fa fa-edit"></i>
+          </button>
+
+          <button class="icon-btn-danger mr-3 delete-client" data-id="${client._id}">
+            <i class="fa fa-trash"></i>
+          </button>
+
+          <button class="icon-btn-info share-client" data-id="${client._id}">
+            <i class="fa fa-share-alt"></i>
+          </button>
+        </div>
+      </td>
+    </tr>
+  `;
+    return tr;
 }
 
 function checkInLs(key) {
@@ -152,12 +207,9 @@ function checkInLs(key) {
 
 function ajax(request) {
     return new Promise(function (resolve, reject) {
-        $.ajax({
+        let options = {
             type: request.type,
             url: request.url,
-            data: request.type == "GET" ? {} : request.data,
-            processData: request.type == "GET" ? true : false,
-            contentType: request.type == "GET" ? "application/json" : false,
             beforeSend: function () {
                 if (request.isLoader) {
                     $(request.commonBtn).addClass("d-none");
@@ -178,7 +230,19 @@ function ajax(request) {
                 }
                 reject(error);
             }
-        });
+        }
+
+        if (request.type == "POST" || request.type == "PUT") {
+            options['data'] = request.data;
+            options['processData'] = false;
+            options['contentType'] = false;
+        }
+
+        if (request.type == "DELETE") {
+            options['data'] = request.data;
+        }
+
+        $.ajax(options);
     });
 
 }

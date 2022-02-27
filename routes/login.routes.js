@@ -4,9 +4,9 @@ const tokenService = require("../services/token.service");
 const httpService = require("../services/http.service");
 const bcryptService = require("../services/bcrypt.service");
 
-router.post("/", async (request, response) => {
+router.post("/",async (request,response)=>{
   const expiresIn = 120;
-  const token = await tokenService.createToken(request, expiresIn);
+  const token = await tokenService.createToken(request,expiresIn);
 
   // getting user id
   const companyRes = await httpService.getRequest({
@@ -14,17 +14,18 @@ router.post("/", async (request, response) => {
     api: '/api/private/company',
     data: token
   });
-  if (companyRes.body.isCompanyExist) {
+  if(companyRes.body.isCompanyExist)
+  {
     const query = {
       body: {
         uid: companyRes.body.data[0]._id
       },
       endpoint: request.get('origin'),
       api: "/api/private/user",
-      iss: request.get('origin') + request.originalUrl
+      iss: request.get('origin')+request.originalUrl
     }
 
-    const uidToken = await tokenService.createCustomToken(query, expiresIn);
+    const uidToken = await tokenService.createCustomToken(query,expiresIn);
 
     const passwordRes = await httpService.getRequest({
       endpoint: request.get('origin'),
@@ -33,7 +34,8 @@ router.post("/", async (request, response) => {
     });
 
     // getting user password
-    if (passwordRes.body.isCompanyExist) {
+    if(passwordRes.body.isCompanyExist)
+    {
       // allow single device login
       /*
       if(passwordRes.body.data[0].isLogged)
@@ -44,13 +46,15 @@ router.post("/", async (request, response) => {
         });
         return false;
       }
-*/
+      */
+
 
       const realPassword = passwordRes.body.data[0].password;
-      const isLogged = await bcryptService.decrypt(realPassword, request.body.password);
-      if (isLogged) {
+      const isLogged = await bcryptService.decrypt(realPassword,request.body.password);
+      if(isLogged)
+      {
         const secondsInOneDay = 86400; // 1 day
-        const authToken = await tokenService.createCustomToken(query, secondsInOneDay);
+        const authToken = await tokenService.createCustomToken(query,secondsInOneDay);
         // update token in database
         const dbToken = await httpService.putRequest({
           endpoint: request.get('origin'),
@@ -58,7 +62,7 @@ router.post("/", async (request, response) => {
           data: authToken
         });
 
-        response.cookie("authToken", authToken, { maxAge: (secondsInOneDay * 1000) });
+        response.cookie("authToken",authToken,{maxAge:(secondsInOneDay*1000)});
 
         response.status(200);
         response.json({
@@ -66,7 +70,7 @@ router.post("/", async (request, response) => {
           message: "Success"
         });
       }
-      else {
+      else{
         response.status(401);
         response.json({
           isLogged: false,
@@ -74,12 +78,12 @@ router.post("/", async (request, response) => {
         });
       }
     }
-    else {
+    else{
       response.status(passwordRes.status);
       response.json(passwordRes.body);
     }
   }
-  else {
+  else{
     response.status(companyRes.status);
     response.json(companyRes.body);
   }

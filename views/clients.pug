@@ -45,7 +45,7 @@ include profile
         div.modal-content.border-none
           div.modal-body.px-4.py-4
             h4.medium-font.mb-4 Client Details
-            form#addClientForm
+            form#clientForm
               div.form-group.mb-4
                 input.input.form-control.remove-focus(type="text" name="clientName" placeholder="Client name" required="required" value="saurav")
                 
@@ -63,5 +63,6 @@ include profile
               button.btn.btn-danger.btn-design.d-none.add-client-loader(disabled="disabled")
                 span.spinner-grow.spinner-grow-sm.mr-2
                 span Processing
-    .tmp             
+    div.tmp
+                
               

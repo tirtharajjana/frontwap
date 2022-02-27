@@ -41,18 +41,24 @@ const countData = async (schema) => {
   const dataRes = await currentSchema.countDocuments();
   return dataRes;
 }
+
 const paginate = async (from, to, schema) => {
   const currentSchema = schemaList[schema];
   const dataRes = await currentSchema.find().skip(from).limit(to);
   return dataRes;
 }
 
-
+const deleteById = async (id, schema) => {
+  const currentSchema = schemaList[schema];
+  const dataRes = await currentSchema.findByIdAndDelete(id);
+  return dataRes;
+}
 
 module.exports = {
   createRecord: createRecord,
   getRecordByQuery: getRecordByQuery,
   updateByQuery: updateByQuery,
-  countData,
-  paginate
+  countData: countData,
+  paginate: paginate,
+  deleteById: deleteById
 }

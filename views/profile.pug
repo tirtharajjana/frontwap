@@ -9,7 +9,7 @@ html
     block loadScript
     block loadStyle
   body(style="background:#F2F2F2")
-    - const toolbar=[{label:"Clients",icon:"fas fa-user-secret",link:"/clients"},{label:"Teams",icon:"fas fa-users",link:"/teams"},{label:"Logout",icon:"fa fa-sign-out-alt",link:"/logout"}]
+    - const toolbar = [{label:"Clients",icon:"fas fa-user-secret",link:"/clients"},{label:"Teams",icon:"fas fa-users",link:"/teams"},{label:"Logout",icon:"fa fa-sign-out-alt",link:"/logout"}]
     div
       div.sidenav.sidenav-open
       div.section.section-open
@@ -17,10 +17,12 @@ html
           button.btn.toggler
             i.fa.fa-align-left
           ul.navbar-nav.ml-auto
-            each menu of toolbar 
+            each menu of toolbar
               li.nav-item
                 button.btn.toolbar.ml-2.p-0
-                  a.nav-link(href=menu.link) 
+                  a.nav-link(href=menu.link)
                     i(class=menu.icon)
-        div 
+        div.px-4.py-3
           block content
+
+          

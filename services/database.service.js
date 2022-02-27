@@ -36,8 +36,23 @@ const updateByQuery = async (query, schema, data) => {
   return dataRes;
 }
 
+const countData = async (schema) => {
+  const currentSchema = schemaList[schema];
+  const dataRes = await currentSchema.countDocuments();
+  return dataRes;
+}
+const paginate = async (from, to, schema) => {
+  const currentSchema = schemaList[schema];
+  const dataRes = await currentSchema.find().skip(from).limit(to);
+  return dataRes;
+}
+
+
+
 module.exports = {
   createRecord: createRecord,
   getRecordByQuery: getRecordByQuery,
-  updateByQuery: updateByQuery
+  updateByQuery: updateByQuery,
+  countData,
+  paginate
 }

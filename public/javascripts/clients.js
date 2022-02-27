@@ -54,6 +54,85 @@ $(document).ready(function () {
     });
 });
 
+//show clients
+$(document).ready(function () {
+    let from = 0;
+    let to = 5;
+    showClients(from, to);
+})
+
+async function showClients(from, to) {
+    const request = {
+        type: 'GET',
+        url: `/clients/${from}/${to}`,
+        isLoader: true,
+        commonBtn: ".tmp",
+        loaderBtn: ".clients-skeleton"
+    }
+    const response = await ajax(request);
+    console.log(response);
+    if (response.data.length > 0) {
+        for (const client of response.data) {
+            const tr = `
+            <tr class="animate__animated animate__fadeIn" >
+                <td>
+                    <div class="d-flex align-items-center">
+                        <i class="fa fa-user-circle mr-3" style="font-size:45px" ></i>
+                        <div>
+                            <p class="p-0 m-0 text-capitilaize" >${client.clientName}</p>
+                            <small class="text-uppercase" >${client.clientCountry}</small>
+                        </div>
+                    </div>
+                </td>
+                <td>
+                    ${client.clientEmail}
+                </td>
+                <td>
+                    ${client.clientMobile}
+                </td>
+                <td>
+                    <span class="badge badge-danger" >Offline</span>
+                </td>
+                <td>
+                    ${client.updatedAt}
+                </td>
+                <td>
+                    <div class="d-flex" >
+                        <button class="icon-btn-primary mr-3 edit-client    " data-id="${client._id}" >
+                            <i class="fa fa-edit" ></i>
+                        </button>
+                        
+                        <button class="icon-btn-danger mr-3 delete-client"  data-id="${client._id}">
+                            <i class="fa fa-trash" ></i>
+                        </button>
+                        
+                        <button class="icon-btn-info share-client " data-id="${client._id}">
+                            <i class="fa fa-share-alt" ></i>
+                        </button>
+                    </div>
+                </td>
+            </tr>
+            `;
+            $("table").append(tr);
+        }
+        clientAction()
+    } else {
+        alert("Data not found")
+    }
+}
+
+function clientAction() {
+    //delete clients
+    $(document).ready(function () {
+        $(".delete-client").each(function () {
+            $(this).click(function () {
+                const id = $(this).data("id");
+                alert(id)
+            })
+        })
+    })
+}
+
 function checkInLs(key) {
     if (localStorage.getItem(key) != null) {
         let tmp = localStorage.getItem(key);

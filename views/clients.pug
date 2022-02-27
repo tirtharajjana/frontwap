@@ -28,7 +28,7 @@ include profile
             th Client
             th Client
           each data of skeleton
-            tr
+            tr.d-none.clients-skeleton
               td.py-3(colspan="6")
                 div.d-flex
                   div.mr-3.d-flex.align-items-center
@@ -63,5 +63,5 @@ include profile
               button.btn.btn-danger.btn-design.d-none.add-client-loader(disabled="disabled")
                 span.spinner-grow.spinner-grow-sm.mr-2
                 span Processing
-                
+    .tmp             
               

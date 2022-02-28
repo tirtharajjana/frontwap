@@ -109,6 +109,16 @@ $(document).ready(function () {
 });
 
 async function showClients(from, to) {
+    $("table").html(`
+      <tr>
+        <th>Client</th>
+        <th>Email</th>
+        <th>Mobile</th>
+        <th>Status</th>
+        <th>Date</th>
+        <th>Action</th>
+      </tr>
+    `);
     const request = {
         type: "GET",
         url: `/clients/${from}/${to}`,
@@ -187,45 +197,45 @@ function dynamicTr(client) {
     let clientData = clientString.replace(/"/g, "'");
 
     const tr = `
-    <tr class="animate__animated animate__fadeIn">
-      <td>
-        <div class="d-flex align-items-center">
-          <i class="fa fa-user-circle mr-3" style="font-size:45px"></i>
-          <div>
-            <p class="p-0 m-0 text-capitalize">${client.clientName}</p>
-            <small class="text-uppercase">${client.clientCountry}</small>
+      <tr class="animate__animated animate__fadeIn">
+        <td>
+          <div class="d-flex align-items-center">
+            <i class="fa fa-user-circle mr-3" style="font-size:45px"></i>
+            <div>
+              <p class="p-0 m-0 text-capitalize">${client.clientName}</p>
+              <small class="text-uppercase">${client.clientCountry}</small>
+            </div>
           </div>
-        </div>
-      </td>
-      <td>
-        ${client.clientEmail}
-      </td>
-      <td>
-        ${client.clientMobile}
-      </td>
-      <td>
-        <span class="badge badge-danger">Offline</span>
-      </td>
-      <td>
-        ${formatDate(client.createdAt)}
-      </td>
-      <td>
-        <div class="d-flex">
-          <button class="icon-btn-primary mr-3 edit-client" data-id="${client._id}" data-client="${clientData}">
-            <i class="fa fa-edit"></i>
-          </button>
-
-          <button class="icon-btn-danger mr-3 delete-client" data-id="${client._id}">
-            <i class="fa fa-trash"></i>
-          </button>
-
-          <button class="icon-btn-info share-client" data-id="${client._id}">
-            <i class="fa fa-share-alt"></i>
-          </button>
-        </div>
-      </td>
-    </tr>
-  `;
+        </td>
+        <td>
+          ${client.clientEmail}
+        </td>
+        <td>
+          ${client.clientMobile}
+        </td>
+        <td>
+          <span class="badge badge-danger">Offline</span>
+        </td>
+        <td>
+          ${formatDate(client.createdAt)}
+        </td>
+        <td>
+          <div class="d-flex">
+            <button class="icon-btn-primary mr-3 edit-client" data-id="${client._id}" data-client="${clientData}">
+              <i class="fa fa-edit"></i>
+            </button>
+  
+            <button class="icon-btn-danger mr-3 delete-client" data-id="${client._id}">
+              <i class="fa fa-trash"></i>
+            </button>
+  
+            <button class="icon-btn-info share-client" data-id="${client._id}">
+              <i class="fa fa-share-alt"></i>
+            </button>
+          </div>
+        </td>
+      </tr>
+    `;
     return tr;
 }
 
@@ -328,20 +338,78 @@ async function getPaginationList() {
     const response = await ajax(request);
     const totalClient = response.data;
     let length = totalClient / 5;
+    let dataSkip = 0;
     let i;
     if (length.toString().indexOf(".") != -1) {
-        // alert("yes");
+        length = length + 1;
+    }
+    for (i = 1; i <= length; i++) {
+        let button = `
+        <button class="btn border paginate-btn ${i == 1 ? 'active' : ''}" data-skip="${dataSkip}">
+            ${i}
+        </button>
+        `;
+        $("#client-pagination").append(button);
+        dataSkip = dataSkip + 5;
+    }
+    getPaginationData();
+
+}
+
+function getPaginationData() {
+    $(".paginate-btn").each(function (index) {
+        $(this).click(function () {
+            controlPrevAndNext(index);
+            removeClasses("active");
+            $(this).addClass("active");
+            const skip = $(this).data("skip");
+            showClients(skip, 5);
+        });
+    });
+}
+
+function removeClasses(className) {
+    $("." + className).each(function () {
+        $(this).removeClass(className);
+    });
+}
+
+$(document).ready(function () {
+    $("#next").click(function () {
+        let currentIndex = 0;
+        $(".paginate-btn").each(function () {
+            if ($(this).hasClass("active")) {
+                currentIndex = $(this).index();
+            }
+        });
+        $(".paginate-btn").eq(currentIndex + 1).click();
+        controlPrevAndNext(currentIndex + 1);
+    });
+});
+
+$(document).ready(function () {
+    $("#prev").click(function () {
+        let currentIndex = 0;
+        $(".paginate-btn").each(function () {
+            if ($(this).hasClass("active")) {
+                currentIndex = $(this).index();
+            }
+        });
+        $(".paginate-btn").eq(currentIndex - 1).click();
+        controlPrevAndNext(currentIndex - 1);
+    });
+});
+
+function controlPrevAndNext(currentIndex) {
+    const totalBtn = $(".paginate-btn").length - 1;
+    if (currentIndex == totalBtn) {
+        $("#next").prop("disabled", true);
+    }
+    else if (currentIndex > 0) {
+        $("#prev").prop("disabled", false);
     }
     else {
-        for (i = 1; i <= length; i++) {
-            let li = `
-        <li class="page-item">
-          <a href="#" class="page-link">
-            ${i}
-          </a>
-        </li>
-      `;
-            $("#client-pagination").append(li);
-        }
+        $("#prev").prop("disabled", true);
+        $("#next").prop("disabled", false);
     }
 }

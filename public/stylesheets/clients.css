@@ -25,3 +25,8 @@ th {
 td {
   border-top: 1px solid #f5f5f5 !important
 }
+
+.active {
+  background-color: #F8F5FF;
+  color: #833AEA
+}

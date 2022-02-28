@@ -25,8 +25,21 @@ $(document).ready(function () {
     });
 });
 
-// add client
+// open modal
 $(document).ready(function () {
+    $("#add-client-btn").click(function () {
+        $("#clientForm").addClass("add-client-form");
+        $("#clientForm").removeClass("update-client-form");
+        $(".add-client-submit").html("Submit");
+        $(".add-client-submit").removeClass("btn-danger px-3");
+        $(".add-client-submit").addClass("btn-primary");
+        $("#clientModal").modal('show');
+        addClient();
+    });
+});
+
+// add client
+function addClient() {
     $(".add-client-form").submit(async function (e) {
         e.preventDefault();
         const token = getCookie("authToken");
@@ -58,21 +71,41 @@ $(document).ready(function () {
             });
         }
     });
-});
+};
 
 // update client
-$(document).ready(function () {
-    $(".update-client-form").submit(function (e) {
+function updateClient(oldTr) {
+    $(".update-client-form").submit(async function (e) {
         e.preventDefault();
-        alert("Upload request");
+        const id = $(this).data("id");
+        const token = getCookie("authToken");
+        const formdata = new FormData(this);
+        formdata.append("token", token);
+        formdata.append("updatedAt", new Date());
+        const request = {
+            type: "PUT",
+            url: "/clients/" + id,
+            isLoader: true,
+            commonBtn: ".add-client-submit",
+            loaderBtn: ".add-client-loader",
+            data: formdata
+        }
+        const response = await ajax(request);
+        const client = response.data;
+        const tr = dynamicTr(client);
+        const updatedTd = $(tr).html();
+        $(oldTr).html(updatedTd);
+        $("#clientModal").modal('hide');
+        clientAction();
     });
-});
+};
 
 // show clients
 $(document).ready(function () {
     let from = 0;
     let to = 5;
     showClients(from, to);
+    getPaginationList();
 });
 
 async function showClients(from, to) {
@@ -127,6 +160,7 @@ function clientAction() {
     $(document).ready(function () {
         $(".edit-client").each(function () {
             $(this).click(function () {
+                let tr = this.parentElement.parentElement.parentElement;
                 const id = $(this).data("id");
                 const clientString = $(this).data("client");
                 let clientData = clientString.replace(/'/g, '"');
@@ -135,7 +169,14 @@ function clientAction() {
                     let value = client[key];
                     $(`[name=${key}]`, "#clientForm").val(value);
                 }
+                $("#clientForm").attr("data-id", id);
+                $("#clientForm").removeClass("add-client-form");
+                $("#clientForm").addClass("update-client-form");
+                $(".add-client-submit").html("Save");
+                $(".add-client-submit").removeClass("btn-primary");
+                $(".add-client-submit").addClass("btn-danger px-3");
                 $("#clientModal").modal('show');
+                updateClient(tr);
             });
         });
     });
@@ -166,7 +207,7 @@ function dynamicTr(client) {
         <span class="badge badge-danger">Offline</span>
       </td>
       <td>
-        ${client.updatedAt}
+        ${formatDate(client.createdAt)}
       </td>
       <td>
         <div class="d-flex">
@@ -259,4 +300,48 @@ function getCookie(cookieName) {
         }
     }
     return cookieValue;
+}
+
+function formatDate(dateString) {
+    const date = new Date(dateString);
+    let dd = date.getDate();
+    // insert 0 before date
+    if (dd < 10) {
+        dd = '0' + dd;
+    }
+    let mm = date.getMonth() + 1;
+    // insert 0 before month
+    if (mm < 10) {
+        mm = '0' + mm;
+    }
+    const yy = date.getFullYear();
+    // get time
+    const time = date.toLocaleTimeString();
+    return dd + "-" + mm + "-" + yy + " " + time;
+}
+
+async function getPaginationList() {
+    const request = {
+        type: "GET",
+        url: "/clients/count-all"
+    }
+    const response = await ajax(request);
+    const totalClient = response.data;
+    let length = totalClient / 5;
+    let i;
+    if (length.toString().indexOf(".") != -1) {
+        // alert("yes");
+    }
+    else {
+        for (i = 1; i <= length; i++) {
+            let li = `
+        <li class="page-item">
+          <a href="#" class="page-link">
+            ${i}
+          </a>
+        </li>
+      `;
+            $("#client-pagination").append(li);
+        }
+    }
 }

@@ -18,15 +18,15 @@ include profile
           div.col-md-6
           div.col-md-3.text-right
             button.btn.btn-light.mr-4 Export
-            button.btn.btn-primary(data-toggle="modal" data-target="#clientModal") Add Client
+            button.btn.btn-primary#add-client-btn Add Client
         table.table.my-4
           tr
             th Client
-            th Client
-            th Client
-            th Client
-            th Client
-            th Client
+            th Email
+            th Mobile
+            th Status
+            th Date
+            th Action
           each data of skeleton
             tr.d-none.clients-skeleton
               td.py-3(colspan="6")
@@ -39,6 +39,9 @@ include profile
                       div.skeleton-loader
                     div.skeleton#client-subtitle
                       div.skeleton-loader
+        ul.pagination#client-pagination
+          
+
                   
     div.modal.animate__animated.animate__slideInDown.animate__faster#clientModal
       div.modal-dialog.modal-dialog-centered

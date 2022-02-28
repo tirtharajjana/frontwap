@@ -22,4 +22,8 @@ router.delete("/:id",(request,response)=>{
   clientController.deleteClients(request,response);
 });
 
+router.put("/:id",(request,response)=>{
+  clientController.updateClients(request,response);
+});
+
 module.exports = router;

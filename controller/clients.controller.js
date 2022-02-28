@@ -90,9 +90,30 @@ const deleteClients = async (request,response)=>{
   }
 }
 
+const updateClients = async (request,response)=>{
+  const tokenData = await tokenService.verifyToken(request);
+  if(tokenData.isVerified)
+  {
+    const id = request.params.id;
+    const data = request.body;
+    const updateRes = await dbService.updateById(id,data,'client');
+    response.status(201);
+    response.json({
+      data: updateRes
+    });
+  }
+  else  {
+    response.status(401);
+    response.json({
+      message: "permission denied !"
+    });
+  }
+}
+
 module.exports = {
   create: create,
   countClients: countClients,
   paginate: paginate,
-  deleteClients: deleteClients
+  deleteClients: deleteClients,
+  updateClients: updateClients
 }

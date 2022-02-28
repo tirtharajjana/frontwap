@@ -54,11 +54,18 @@ const deleteById = async (id, schema) => {
   return dataRes;
 }
 
+const updateById = async (id, data, schema) => {
+  const currentSchema = schemaList[schema];
+  const dataRes = await currentSchema.findByIdAndUpdate(id, data, { new: true });
+  return dataRes;
+}
+
 module.exports = {
   createRecord: createRecord,
   getRecordByQuery: getRecordByQuery,
   updateByQuery: updateByQuery,
   countData: countData,
   paginate: paginate,
-  deleteById: deleteById
+  deleteById: deleteById,
+  updateById: updateById
 }

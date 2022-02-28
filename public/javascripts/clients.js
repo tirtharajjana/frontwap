@@ -202,12 +202,12 @@ function dynamicTr(client) {
           <div class="d-flex align-items-center">
             <i class="fa fa-user-circle mr-3" style="font-size:45px"></i>
             <div>
-              <p class="p-0 m-0 text-capitalize">${client.clientName}</p>
+              <p class="p-0 m-0 text-capitalize client-name">${client.clientName}</p>
               <small class="text-uppercase">${client.clientCountry}</small>
             </div>
           </div>
         </td>
-        <td>
+        <td class="client-email" >
           ${client.clientEmail}
         </td>
         <td>
@@ -407,9 +407,70 @@ function controlPrevAndNext(currentIndex) {
     }
     else if (currentIndex > 0) {
         $("#prev").prop("disabled", false);
+        $("#next").prop("disabled", true);
+
     }
     else {
         $("#prev").prop("disabled", true);
         $("#next").prop("disabled", false);
     }
+}
+
+//control filter
+
+$(document).ready(function () {
+    filterByName();
+    $(".filter-btn").click(function () {
+        if ($(".filter").hasClass("filter-by-name")) {
+            $(".filter").removeClass("filter-by-name");
+            $(".filter").addClass("filter-by-email");
+            $(".filter").attr("placeholder", "Search by email");
+            filterByEmail();
+        } else {
+            $(".filter").removeClass("filter-by-email");
+            $(".filter").addClass("filter-by-name");
+            $(".filter").attr("placeholder", "Search by name");
+
+        }
+    })
+})
+
+//filter by name
+function filterByName() {
+    $(document).ready(function () {
+        $(".filter-by-name").on("input", function () {
+            let tr = "";
+            let keyword = $(this).val().trim().toLowerCase();
+            $(".client-name").each(function () {
+                let clientName = $(this).html().toLowerCase();
+                if (clientName.indexOf(keyword) == -1) {
+                    tr = $(this).parent().parent().parent().parent();
+                    $(tr).addClass("d-none");
+                } else {
+                    tr = $(this).parent().parent().parent().parent();
+                    $(tr).removeClass("d-none");
+                }
+            })
+        })
+    })
+}
+
+//filter by email
+function filterByEmail() {
+    $(document).ready(function () {
+        $(".filter-by-email").on("input", function () {
+            let tr = "";
+            let keyword = $(this).val().trim().toLowerCase();
+            $(".client-email").each(function () {
+                let clientEmail = $(this).html().toLowerCase();
+                if (clientEmail.indexOf(keyword) == -1) {
+                    tr = $(this).parent();
+                    $(tr).addClass("d-none");
+                } else {
+                    tr = $(this).parent();
+                    $(tr).removeClass("d-none");
+                }
+            })
+        })
+    })
 }
